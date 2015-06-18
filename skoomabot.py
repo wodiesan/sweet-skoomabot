@@ -44,40 +44,34 @@ for submission in subreddit.get_new(limit=post_limit):
     post = dbc.Post(submission)
 
     # Fix dbc.checked_post to check for values in different keys.
-    if post.id_num not in dbc.checked_post and post._match(dbc.drug_dict):
-        # slang returns None if the match is under 3 characters in legnth.
-        slang = post._category(dbc.drug_dict, dbc.py_dict_drug, dbc.py_list_drug, dbc.py_matrix_drug, post.title)
+    if post.id_num not in dbc.checked_post:
         setting = post._category(dbc.setting_dict, dbc.py_dict_set, dbc.py_list_set, dbc.py_matrix_set, post.title)
 
-        if not slang:
-            dbc.checked_post['neg'].append(post.id_num)
-        else:
-            # TURN submission.id into KEY, and category matches values.
+        if post._match(dbc.drug_dict):
+        # slang returns None if the match is under 3 characters in legnth.
+            slang = post._category(dbc.drug_dict, dbc.py_dict_drug, dbc.py_list_drug, dbc.py_matrix_drug, post.title)
             print 'Post {} contains a match for {}:'.format(post.id_num, slang)
             print 'Title: {}\n'.format(post.title)
 
-            dbc.checked_post['pos'].append(post.id_num)
-    else:
-        dbc.checked_post['neg'].append(post.id_num)
+            if slang:
+                dbc.checked_post['pos'].append(post.id_num)
+        else:
+            dbc.checked_post['neg'].append(post.id_num)
 
-    # Quick and dirty solution to getting the rest of the charts.
-    # TODO: Revisit after presentation.
-    # setting = post._category(dbc.setting_dict, dbc.py_dict_set, dbc.py_list_set, dbc.py_matrix_set, post.title)
+            # TURN submission.id into KEY, and category matches values.
 
 
 print '\nThere are {} out of {} titles that contain a slang match.'.format(len(dbc.checked_post['pos']), post_limit)
 print 'This leaves {} out of {} titles without matches.'.format(len(dbc.checked_post['neg']), post_limit)
 print '\nBot ended at {}'.format(time.time())
 
-# Testing plot.ly using dict broken down into key list and val list.
-print 'plotly plot points:\n'
-
 # Get the x and y axis. Perhaps a function to do this?
 # mainviz_xaxis = dbc.py_dict_drug.keys()
 mainviz_xaxis = dbc.py_list_drug
 mainviz_yaxis = dbc.py_dict_drug.values()
 
-settingviz_xaxis = dbc.py_dict_set.keys()
+# settingviz_xaxis = dbc.py_dict_set.keys()
+settingviz_xaxis = dbc.py_list_set
 settingviz_yaxis = dbc.py_dict_set.values()
 
 viz_bar_drug = 'Number of appearances of drug types in the last 1000 /r/Drugs post titles.'
@@ -104,6 +98,7 @@ def viz_bar(graph_name, xaxis, yaxis, filename):
 
 
 def viz_heat(graph_name, xyaxis, zaxis, filename):
+    """Creates a categorial heatmap for plot.ly."""
     data = Data([
         Heatmap(
             name=filename,

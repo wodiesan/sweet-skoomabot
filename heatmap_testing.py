@@ -5,8 +5,13 @@ https://plot.ly/~wodiesan/56/test-heatmap-of-poly-drug-posts/
 
 coord_to_matrix function needs work.
 """
-# import druggiebot_config as dbc
+import skoomabot_config as dbc
+from collections import OrderedDict
 
+drug_dict_ord = OrderedDict(dbc.drug_dict)
+drug_dict_keys = dbc.drug_dict.keys()
+print 'keys'
+print drug_dict_keys
 # mainviz_xaxis = dbc.plotly_dict.keys()
 # print mainviz_xaxis
 # print len(mainviz_xaxis)
@@ -51,31 +56,21 @@ def parse_poly(poly_list):
 
 
 def coord_to_matrix(coord_list):
-    """Takes a list of indicies, returns position in the heatmap matrix.
-
-    HERE BE TROUBLE. 
-    I'm looking for something like [[1, 0],[1, 4],[0, 4]]
-    for the result2 dataset. It should be easy, but my brain is fried right now."""
+    """Takes a list of indicies, returns coordinates for the matrix."""
     heatmap_coord_list = []
+    # x = 1
     for item in coord_list:
-        for x in range(len(coord_list)):
-            try:
-            # while x > len(coord_list):
-            #     index = coord_list.index(item)
-            #     position = [item, coord_list[index + 1]]
-            #     print 'pos: {}'.format(position)
-            #     heatmap_coord_list.append(position)
-            #     x += 1
-            # for x in range(len(coord_list)):
-                # index_increment = coord_list.index(item) # 15JUN JUST COMMENTED OUT
-                index_increment = coord_list.index(item += 1)
-                position = [item, coord_list[index_increment]]
-                # position = coord_recursion(coord_list, index_increment)
-                heatmap_coord_list.append(position)
-            except IndexError:
-                pass
+        try:
+            index = coord_list.index(item)
+            for other_items in coord_list:
+                if other_items is not item:
+                    position = [item, other_items]
+                    heatmap_coord_list.append(position)
+                # print 'pos: {}'.format(position)
+        except IndexError:
+            pass
 
-    print '\nYour pos for {}:'.format(heatmap_coord_list)
+    print '\nCoordinates to uptick: {}'.format(heatmap_coord_list)
     return heatmap_coord_list
 
 get_indices = parse_poly(result2)

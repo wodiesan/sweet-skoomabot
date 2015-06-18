@@ -34,7 +34,7 @@ class Post:
     # def _category(self, term_dict, plotly_dict, plotly_matrix, lookup):
     def _category(self, term_dict, plotly_dict, plotly_list, plotly_matrix, lookup):
         """Checks for slang terms in post title. Returns all matching drugs as a list.
-        THIS IS INCOMPLETE."""
+        plotly_list could possibly be unecessary/bug-causing."""
         list_of_matches = []
         lookup = lookup.split()
         for word in lookup:
@@ -99,8 +99,8 @@ def create_matrix(dict_category):
 def dict_wo_vals(dict_w_vals):
     """Takes a dict, returns new dict with None vals for all keys."""
     # Ensure that OrderedDict is being properly used.
-    copy_dict = OrderedDict(dict_w_vals)
-    copy_dict = dict.fromkeys(copy_dict.keys(), None)
+    # copy_dict = OrderedDict(dict_w_vals)
+    copy_dict = OrderedDict.fromkeys(dict_w_vals.keys(), None)
     return copy_dict
 
 
@@ -217,10 +217,12 @@ setting_dict['psychological'] = psychological
 # pos_high = []
 # neg_high = []
 
-py_list_drug = drug_dict.keys()
+# py_list_drug = drug_dict.keys()
 py_dict_drug = dict_wo_vals(drug_dict)
+py_list_drug = py_dict_drug.keys()
 py_matrix_drug = create_matrix(drug_dict)
 
-py_list_set = setting_dict.keys()
+# py_list_set = setting_dict.keys()
 py_dict_set = dict_wo_vals(setting_dict)
+py_list_set = py_dict_set.keys()
 py_matrix_set = create_matrix(setting_dict)
