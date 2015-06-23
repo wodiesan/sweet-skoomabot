@@ -29,27 +29,15 @@ class Post:
         self.time = self.post.created_utc
         self.date = time.strftime('%d %b %Y', time.gmtime(self.time))
         self.link = self.post.permalink
+        try:
+            self.username = self.post.author.name
+        except AttributeError:
+            self.username = 'deleted'
 
     # DO I WANT TO KEEP TRACK OF THE ACTUAL SLANG TERM?
-    # def _category(self, term_dict, plotly_dict, plotly_matrix, lookup):
-    def _category(self, term_dict, plotly_dict, plotly_list, plotly_matrix, lookup):
+    def _category(self, plotly_dict, plotly_list, plotly_matrix, list_of_matches):
         """Checks for slang terms in post title. Returns all matching drugs as a list.
         plotly_list could possibly be unecessary/bug-causing."""
-        list_of_matches = []
-        lookup = lookup.split()
-        for word in lookup:
-            word = re.sub('[^0-9a-z\']', '', word)
-            if len(word) > 2:
-                for key, value in term_dict.items():
-                    for v in value:
-                        if re.match(r'{}'.format(v), word):
-                            # print 'Match: {} from {}.'.format(word, key)
-                            if key not in list_of_matches:
-                                list_of_matches.append(key)
-                            else:
-                                pass
-        else:
-            pass
 
         for term in list_of_matches:
             self._insert_plot_point(plotly_dict, term)
@@ -61,19 +49,73 @@ class Post:
             insert_heat_point(plotly_matrix, poly_coord)
         return list_of_matches
 
-    def _match(self, dict):
-        """Takes a op title and checks for drug slang from a dictionary."""
-        if any(string in self.title for string in dict):
-            return True
+    # def _category(self, term_dict, plotly_dict, plotly_list, plotly_matrix, lookup):
+    #     """Checks for slang terms in post title. Returns all matching drugs as a list.
+    #     plotly_list could possibly be unecessary/bug-causing."""
+    #     list_of_matches = []
+    #     lookup = lookup.replace('/', ' ').split()
+    #     for word in lookup:
+    #         word = re.sub('[^0-9a-z\']', '', word)
+    #         if len(word) > 2:
+    #             for key, value in term_dict.items():
+    #                 for v in value:
+    #                     if re.match(r'{}'.format(v), word) and key not in list_of_matches:
+    #                             list_of_matches.append(key)
+    #                     else:
+    #                         pass
+    #     else:
+    #         pass
+
+    #     for term in list_of_matches:
+    #         self._insert_plot_point(plotly_dict, term)
+
+    #     if len(list_of_matches) > 1:
+    #         print 'More than one drug mentioned.'
+    #         indicies_list = parse_poly(plotly_list, list_of_matches)
+    #         poly_coord = index_list_to_matrix_coord(indicies_list)
+    #         insert_heat_point(plotly_matrix, poly_coord)
+    #     return list_of_matches
+
+    # def _match(self, dict):
+    #     """Takes a op title and checks for drug slang from a dictionary."""
+    #     if any(string in self.title for string in dict):
+    #         return True
+    #     else:
+    #         return False
+
+    def _match(self, term_dict, lookup):
+        list_of_matches = []
+        lookup = lookup.replace('/', ' ').split()
+        for word in lookup:
+            word = re.sub('[^0-9a-z\']', '', word)
+            if len(word) > 2:
+                for key, value in term_dict.items():
+                    for v in value:
+                        if re.match(r'{}'.format(v), word) and key not in list_of_matches:
+                                list_of_matches.append(key)
+                        else:
+                            pass
         else:
-            return False
+            pass
+        return list_of_matches
 
     def _insert_plot_point(self, x_axis_dict, term):
+    # def _insert_plot_point(x_axis_dict, term):
         """For every drug that's mentioned, uptick 1 to the key's value."""
         try:
             x_axis_dict[term] += 1
         except (AttributeError, TypeError):
             x_axis_dict[term] = 1
+
+    # def _uptick(list_of_matches, plotly_dict, plotly_list, plotly_matrix):
+    #     for term in list_of_matches:
+    #         _insert_plot_point(plotly_dict, term)
+
+    #     if len(list_of_matches) > 1:
+    #         # print 'More than one drug mentioned.'
+    #         indicies_list = parse_poly(plotly_list, list_of_matches)
+    #         poly_coord = index_list_to_matrix_coord(indicies_list)
+    #         insert_heat_point(plotly_matrix, poly_coord)
 
 
 # TESTING OUT PLOTTING TO PLOT.LY
@@ -159,18 +201,18 @@ checked_post.setdefault('neg', [])
 # METH HAS FALSE POSITIVES FOR 'SO[METH]ING' AND '[METH]OD'!
 alcohol = ['alcohol', 'beer', 'liquor', 'wine']
 caffeine = ['caffeine', 'coffee']
-cannabis = ['cannabis', 'marijuana', 'weed', 'tree', 'blunt', 'thc']
+cannabis = ['cannabis', 'marijuana', 'weed', 'tree', 'blunt', 'thc', 'bud', 'hash', 'grass', 'ganj', 'herb', 'pot']
 nicotine = ['nicotine', 'tobacco', 'cig', 'snus']
 cocaine = ['cocaine', 'coke', 'yayo']
 ecstasy = ['mdma', 'ecstasy', 'molly', 'xtc']
 heroin = ['heroin', 'smack', 'dope', 'junk']
-lsd = ['acid', 'lsd']
+lsd = ['acid', 'lsd', 'blotter']
 meth = ['glass', 'crank', 'meth', 'speed', 'crystal']
-painkiller = ['oxy', 'codone', 'dilaudid', 'perc']
-salvia = ['salvia']
-otc = ['maoi', 'benadryl', 'dxm']
+painkiller = ['oxy', 'codone', 'dilaudid', 'perc', 'methadone', 'morphine']
+salvia = ['salvia', 'sally', 'maria', 'divinorum']
+otc = ['aspirin', 'maoi', 'benadryl', 'diphenhyd', 'dxm', 'dextromo', 'robo', 'acetom', 'ibupro']
 benzo = ['benzo', 'valium', 'xanax', 'klonopin', 'ativan']
-psilocybin = ['shroom']
+psilocybin = ['shroom', 'psilocybin', 'mushroom']
 amphetamine = ['amph', 'adderall', 'vyvanse', 'dex', 'concerta', 'ritalin', 'focalin']
 
 drug_dict = {}
@@ -198,7 +240,7 @@ legal = ['prison', 'jail', 'police', 'cop', 'officer', 'arrest', 'undercover', '
 party = ['rave', 'party', 'club', 'edm', 'concert', 'festival', 'bar']
 health = ['addict', 'reaction', 'safe', 'danger', 'withdrawl', 'prescribe']
 physical = ['allerg', 'death', 'die', 'nausea', 'sleep', 'tolerance', 'toxic']
-psychological = ['anxiety', 'ego', 'depress', 'dysfunction', 'coping', 'mental', 'neuro', 'scare', 'therapy']
+psychological = ['adhd', 'anxiety', 'ego', 'depress', 'dysfunction', 'coping', 'mental', 'neuro', 'scare', 'therapy']
 cost = ['cost', 'price', 'afford', 'money', 'sell', 'hustle', 'deal']
 # question = ['how to']
 # politics = ['dispensary']
