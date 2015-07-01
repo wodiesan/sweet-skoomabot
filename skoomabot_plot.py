@@ -14,6 +14,9 @@ import time
 from plotly.graph_objs import Bar, Data, Heatmap, Layout, Figure
 # import plotly.tools as tls
 import plotly.plotly as viz
+import praw
+
+bot_version = 'Version 0.3.1'
 
 
 class Post:
@@ -46,18 +49,35 @@ class Post:
             self._insert_plot_point(plotly_dict, term)
 
         if len(list_of_matches) > 1:
-            # print 'More than one drug mentioned.'
             indicies_list = parse_poly(plotly_list, list_of_matches)
             poly_coord = index_list_to_matrix_coord(indicies_list)
             insert_heat_point(plotly_matrix, poly_coord)
         return list_of_matches
+
+    def _tag(self, term_dict, lookup):
+        list_of_matches = []
+        list_of_sub_matches = []
+        if re.match(r'\[', lookup):
+            endtag = lookup.index(']')
+            post_tag = lookup[1:endtag]
+            post_tag = re.sub(r'\W', '', post_tag)
+            for key, value in term_dict.items():
+                for v in value:
+                    if re.search(r'{}'.format(v), post_tag) \
+                                and key not in list_of_matches:
+                                    list_of_matches.append(key)
+                                    list_of_sub_matches.append(v)
+            else:
+                pass
+        return list_of_matches, list_of_sub_matches
 
     def _match(self, term_dict, lookup):
         list_of_matches = []
         list_of_sub_matches = []
         lookup = lookup.replace('/', ' ').split()
         for word in lookup:
-            word = re.sub('[^0-9a-z\']', '', word)
+            # word = re.sub('[^0-9a-z\']', '', word)
+            word = re.sub(r'\W', '', word)
             if len(word) > 2:
                 for key, value in term_dict.items():
                     for v in value:
@@ -82,6 +102,16 @@ class Post:
 # This should be moved into its own class.
 ##########################################
 
+def search_subreddit(subreddit, post_limit=1000):
+    """Takes the subreddit name ('/r/' is unecessary)."""
+    user_agent = 'Visualize posts to /r/{}. {}'.format(subreddit, bot_version)
+    start_time = time.time()
+    gmt_time = time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime(start_time))
+    r = praw.Reddit(user_agent=user_agent)
+    subreddit = r.get_subreddit(subreddit, fetch=True)
+    post_limit = post_limit
+
+
 def parse_poly(drug_list, post_list):
     """Takes a list of drugs and returns [indicies] based on drug_list.
     Used for poly drug matches when parsing titles in posts."""
@@ -89,8 +119,6 @@ def parse_poly(drug_list, post_list):
     for item in post_list:
         coord_index = drug_list.index(item)
         coord_list.append(coord_index)
-
-    # print '\nThe indices for {}: {}'.format(post_list, coord_list)
     return coord_list
 
 

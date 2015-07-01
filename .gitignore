@@ -1,6 +1,7 @@
 # skoomabot
 *.pyc
 *.p12
+/skoomabot_elderscrolls.py
 /skoomabot_google.py
 /skoomabot_local.py
 /creds.data
