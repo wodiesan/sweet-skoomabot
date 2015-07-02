@@ -41,6 +41,7 @@ subreddit = sbp.search_subreddit(subred)
 checked_id = sbs.sci_checked_id
 
 # Dict that contains the different series that we are matching for.
+# Keep in mind that not all subreddits use a tag system.
 tag_dict = sbs.sci_dict
 
 # These are used for the axes in various plot.ly visualizations.

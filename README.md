@@ -1,21 +1,30 @@
-# sweet-skoomabot
+# skoomabot
 A Reddit bot that parses the posts to the subreddits and matches the post titles based on provided dictionaries.
 The results are then visualized through plot.ly charts.
 This Reddit bot originated as coursework for SOCL 406: Drugs and Society taken in Summer 2015 at Wentworth.
 The current focus has shifted towards looking through /r/AskScienceFiction, though any subreddit can be checked.
 
+*This bot authenticates with my Plot.ly account through a credentials file on my machine.*
+To make your own charts, you'll have to get an account: [Plot.ly Python User Guide](https://plot.ly/python/user-guide/)
+
 ### /r/AskScienceFiction
 Per the subreddit's sidebar:
 ```It's like Ask Science, but all questions and answers are written with answers gleaned from the universe itself.```
+[/r/AskScienceFiction](https://www.reddit.com/r/AskScienceFiction/) is fun to look at because of the diverse selection of series and characters that appear.
+What's more interesting is that many posts will contain questions that pertain to two different series.
 
 #### By Series in the Last 1000 Posts
+*1000 results is Reddit's upstream limitation.*
+See [PRAW's Non-obvious behavior](http://praw.readthedocs.org/en/latest/pages/faq.html) for more information.
+Anyways:
 
 <div>
     <a href="https://plot.ly/~wodiesan/220/" target="_blank" title="Frequency of series mentioned in the last 1000 /r/AskScienceFiction post titles." style="display: block; text-align: center;"><img src="https://plot.ly/~wodiesan/220.png" alt="Frequency of series mentioned in the last 1000 /r/AskScienceFiction post titles." style="max-width: 100%;"  onerror="this.onerror=null;this.src='https://plot.ly/404.png';" /></a>
     <script data-plotly="wodiesan:220" src="https://plot.ly/embed.js" async></script>
 </div>
 
-#### Who Gets Mentioned the Most in the Last Top 1000 Marvel Posts?
+#### Top Series: Marvel
+So let's look into the top 1000 posts that are tagged with [Marvel]. We switch sort from 'new' to 'top' (though we can do either), and search with the term 'Marvel'. Now we point towards the key within the dictionary that we're matching for, and...
 
 <div>
     <a href="https://plot.ly/~wodiesan/229/" target="_blank" title="Frequency of related terms in the top 1000 /r/ AskScienceFiction posts tagged Marvel." style="display: block; text-align: center;"><img src="https://plot.ly/~wodiesan/229.png" alt="Frequency of related terms in the top 1000 /r/ AskScienceFiction posts tagged Marvel." style="max-width: 100%;"  onerror="this.onerror=null;this.src='https://plot.ly/404.png';" /></a>
@@ -29,8 +38,10 @@ Per the subreddit's sidebar:
     <script data-plotly="wodiesan:227" src="https://plot.ly/embed.js" async></script>
 </div>
 
+Superman beats Batman? Now this is humorous.
+
 #### ...Skipping Star Wars for Warhammer 40K...
-I love 40K.
+What can I say? I love 40K.
 
 <div>
     <a href="https://plot.ly/~wodiesan/248/" target="_blank" title="Frequency of related terms in the top 1000 /r/ AskScienceFiction posts tagged 40K." style="display: block; text-align: center;"><img src="https://plot.ly/~wodiesan/248.png" alt="Frequency of related terms in the top 1000 /r/ AskScienceFiction posts tagged 40K." style="max-width: 100%;"  onerror="this.onerror=null;this.src='https://plot.ly/404.png';" /></a>
@@ -68,4 +79,3 @@ I love 40K.
     <a href="https://plot.ly/~wodiesan/108/" target="_blank" title="Heatmap of poly-drug mentions in the last 1000 /r/Drugs post titles." style="display: block; text-align: center;"><img src="https://plot.ly/~wodiesan/108.png" alt="Heatmap of poly-drug mentions in the last 1000 /r/Drugs post titles." style="max-width: 100%;"  onerror="this.onerror=null;this.src='https://plot.ly/404.png';" /></a>
     <script data-plotly="wodiesan:108" src="https://plot.ly/embed.js" async></script>
 </div>
-
