@@ -4,25 +4,26 @@
 
 Config file that contains the various:
 1. Dictionaries and lists of terms.
-2. Functions to build dicts and lists for charting in plot.ly.
 """
 
 from collections import OrderedDict
 import skoomabot_config as sbc
 
-checked_post = {}
-checked_post.setdefault('pos', [])
-checked_post.setdefault('neg', [])
+sci_checked_id = {}
+sci_checked_id.setdefault('pos', [])
+sci_checked_id.setdefault('neg', [])
 
-bethesda = ['elderscrolls', 'fallout', 'morrowind', 'oblivion', 'skyrim']
-bungie = ['halo']
-dc = ['arkham', 'batman', 'dc', 'injustice', 'justice', 'superman']
+# dict to store tag categories that appear in /r/AskScienceFiction
+dc = ['arkham', 'batman', 'dc', 'justice', 'superman']
+elderscrolls = ['elderscrolls', 'morrowind', 'oblivion', 'skyrim']
+fallout = ['fallout']
 firefly = ['firefly', 'serenity']
 gameofthrones = ['asoiaf', 'got', 'gameofthrones']
+halo = ['halo']
+harry = ['harrypotter', 'hogwarts']
 lotr = ['hobbit', 'lotr', 'lordoftherings']
 marvel = ['avenger', 'marvel', 'mcu', 'spiderman', 'wolverine', 'xmen']
 matrix = ['matrix']
-potter = ['harrypotter', 'hogwarts']
 starwars = ['starwars']
 startrek = ['startrek']
 terminator = ['t800', 'terminator']
@@ -30,57 +31,55 @@ warhammer = ['40k', 'warhammer', 'w40k', 'wh40k']
 
 sci_dict = {}
 sci_dict = OrderedDict(sci_dict)
-sci_dict['bethesda'] = bethesda
-sci_dict['bungie'] = bungie
 sci_dict['dc'] = dc
+sci_dict['elder scrolls'] = elderscrolls
+sci_dict['fallout'] = fallout
 sci_dict['firefly'] = firefly
 sci_dict['game of thrones'] = gameofthrones
-sci_dict['lotr'] = lotr
+sci_dict['halo'] = halo
+sci_dict['harry potter'] = harry
+sci_dict['lord of the rings'] = lotr
 sci_dict['marvel'] = marvel
 sci_dict['matrix'] = matrix
-sci_dict['potter'] = potter
-sci_dict['startrek'] = startrek
-sci_dict['starwars'] = starwars
+sci_dict['star trek'] = startrek
+sci_dict['star wars'] = starwars
 sci_dict['terminator'] = terminator
-sci_dict['warhammer'] = warhammer
+sci_dict['warhammer 40k'] = warhammer
 
-# dict to store lists of slang names.
-bethesda_cha = ['brotherhood', 'bos', 'champion', 'coc', 'dragonborn', 'ldb', 'nerevar']
-bungie_cha = ['chief', 'cortana', 'covenant', 'halo']
-dc_cha = ['avengers', 'batman', 'kent', 'superman', 'wayne']
+# dict to store characters in each category.
+dc_cha = ['batman', 'constantine', 'flash', 'joker', 'justice', 'lantern', 'superman', 'wayne', 'wonder']
+elderscrolls_cha = ['brotherhood', 'bos', 'champion', 'coc', 'dragonborn', 'ldb', 'nerevar']
+fallout_cha = ['brotherhood', 'bos', 'caps', 'vault']
 firefly_cha = ['mal', 'river']
 got_cha = ['baratheon', 'daenerys', 'dany', 'lannister', 'targaryen']
-lotr_cha = ['aragorn', 'gandalf', 'hobbit', 'saruman', 'sauron', 'smaug']
-marvel_cha = ['america', 'avenger', 'daredevil', 'deadpool', 'spiderman', 'wolverine']
+halo_cha = ['chief', 'cortana', 'covenant', 'flood', 'gravemind', 'halo']
+harry_cha = ['dumbledore', 'hermione', 'muggle', 'potter', 'snape', 'voldermort', 'weasley']
+lotr_cha = ['aragorn', 'gandalf', 'hobbit', 'ring', 'saruman', 'sauron', 'smaug']
+marvel_cha = ['america', 'avenger', 'daredevil', 'deadpool', 'galactus', 'hulk', 'iron', 'spiderman', 'thor', 'wolverine']
 matrix_cha = ['matrix', 'morpheus', 'neo', 'smith', 'trinity']
-potter_cha = ['dumbledore', 'hermione', 'muggle', 'potter', 'snape', 'voldermort', 'weasley']
-starwars_cha = ['jedi', 'luke', 'palpatine', 'sith', 'vader']
-startrek_cha = ['data', 'kirk', 'mccoy', 'picard', 'spock']
-terminator_cha = ['t1000', 'skynet', 't800', 'terminator']
-warhammer_cha = ['chaos', 'eldar', 'emperor', 'imperium', 'marine', 'necron', 'ork', 'tau']
-
+starwars_cha = ['force', 'jedi', 'luke', 'palpatine', 'sidious', 'sith', 'vader', 'yoda']
+startrek_cha = ['borg', 'enterprise', 'federation', 'kirk', 'klingon', 'mccoy', 'picard', 'spock', 'starfleet', 'voyager', 'vulcan']
+terminator_cha = ['connor', 'skynet', 't1000', 't800', 'terminator']
+warhammer_cha = ['chaos', 'eldar', 'emperor', 'guard', 'imperium', 'marine', 'mechanicus', 'necron', 'ork', 'primarch', 'tau', 'tyranid', 'warp']
 
 cha_dict = {}
-cha_dict = OrderedDict(sci_dict)
-cha_dict['bethesda'] = bethesda
-cha_dict['bungie'] = bungie
-cha_dict['dc'] = dc
-cha_dict['firefly'] = firefly
-cha_dict['game of thrones'] = gameofthrones
-cha_dict['lotr'] = lotr
-cha_dict['marvel'] = marvel
-cha_dict['matrix'] = matrix
-cha_dict['potter'] = potter
-cha_dict['startrek'] = startrek
-cha_dict['starwars'] = starwars
-cha_dict['terminator'] = terminator
-cha_dict['warhammer'] = warhammer
+cha_dict = OrderedDict(cha_dict)
+cha_dict['dc'] = dc_cha
+cha_dict['elder scrolls'] = elderscrolls_cha
+cha_dict['fallout'] = fallout_cha
+cha_dict['firefly'] = firefly_cha
+cha_dict['game of thrones'] = got_cha
+cha_dict['halo'] = halo_cha
+cha_dict['harry potter'] = harry_cha
+cha_dict['lord of the rings'] = lotr_cha
+cha_dict['marvel'] = marvel_cha
+cha_dict['matrix'] = matrix_cha
+cha_dict['star trek'] = startrek_cha
+cha_dict['star wars'] = starwars_cha
+cha_dict['terminator'] = terminator_cha
+cha_dict['warhammer 40k'] = warhammer_cha
 
-
-# Use a dict for lists of locations
-py_dict_sci = sbc.dict_wo_vals(sci_dict)
-py_list_sci = py_dict_sci.keys()
-py_matrix_sci = sbc.create_matrix(sci_dict)
-
-# _subcat_dict = sub_dict_wo_vals()
-# _subcat_list = _subcat_dict.keys()
+# Various lists and dicts used for plot.ly axes.
+# py_dict_sci = sbc.dict_wo_vals(sci_dict)
+# py_list_sci = py_dict_sci.keys()
+# py_matrix_sci = sbc.create_matrix(sci_dict)

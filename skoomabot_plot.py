@@ -16,7 +16,7 @@ from plotly.graph_objs import Bar, Data, Heatmap, Layout, Figure
 import plotly.plotly as viz
 import praw
 
-bot_version = 'Version 0.3.1'
+bot_version = 'Version 0.4'
 
 
 class Post:
@@ -42,7 +42,7 @@ class Post:
 
     def _category(self, plotly_dict, plotly_list, plotly_matrix,
                   list_of_matches):
-        """Checks for slang terms in post title. Returns all matching drugs as a list.
+        """Checks for slang terms in post title. Returns all matches as a list.
         plotly_list could possibly be unecessary/bug-causing."""
 
         for term in list_of_matches:
@@ -54,41 +54,60 @@ class Post:
             insert_heat_point(plotly_matrix, poly_coord)
         return list_of_matches
 
+    def _subcategory(self, plotly_dict, list_of_matches):
+        """Checks for slang terms in post title. Returns all matches as a list.
+        plotly_list could possibly be unecessary/bug-causing."""
+
+        for term in list_of_matches:
+            self._insert_plot_point(plotly_dict, term)
+        return list_of_matches
+
     def _tag(self, term_dict, lookup):
+        """If the title has a tag (text enclosed in brackets at the
+            beginning), check for matches on the string within the tag."""
         list_of_matches = []
         list_of_sub_matches = []
         if re.match(r'\[', lookup):
-            endtag = lookup.index(']')
-            post_tag = lookup[1:endtag]
-            post_tag = re.sub(r'\W', '', post_tag)
-            for key, value in term_dict.items():
-                for v in value:
-                    if re.search(r'{}'.format(v), post_tag) \
-                                and key not in list_of_matches:
-                                    list_of_matches.append(key)
-                                    list_of_sub_matches.append(v)
-            else:
-                pass
+            try:
+                endtag = lookup.index(']')
+                post_tag = lookup[1:endtag]
+                post_tag = re.sub(r'\W', '', post_tag)
+                for key, value in term_dict.items():
+                    for v in value:
+                        if re.search(r'{}'.format(v), post_tag) \
+                                    and key not in list_of_matches:
+                                        list_of_matches.append(key)
+                                        list_of_sub_matches.append(v)
+            except ValueError:
+                return list_of_matches, list_of_sub_matches
+        else:
+            pass
         return list_of_matches, list_of_sub_matches
 
-    def _match(self, term_dict, lookup):
+    def _tag_subcat(self, py_list, py_dict):
+        """Performs a match on the list argument, upticks to dict argument."""
+        matches = self._match(py_list, self.title)
+        if matches:
+            # print 'Subcat matches: {}\n'.format(matches)
+            self._subcategory(py_dict, matches)
+
+    def _match(self, term_list, lookup):
         list_of_matches = []
-        list_of_sub_matches = []
         lookup = lookup.replace('/', ' ').split()
+        # lookup = lookup.split()
         for word in lookup:
             # word = re.sub('[^0-9a-z\']', '', word)
             word = re.sub(r'\W', '', word)
             if len(word) > 2:
-                for key, value in term_dict.items():
-                    for v in value:
-                        if re.match(r'{}'.format(v), word) and key not in list_of_matches:
-                                list_of_matches.append(key)
-                                list_of_sub_matches.append(v)
-                        else:
-                            pass
+                for item in term_list:
+                    if re.match(r'{}'.format(item), word) and\
+                                item not in list_of_matches:
+                            list_of_matches.append(item)
+                    else:
+                        pass
         else:
             pass
-        return list_of_matches, list_of_sub_matches
+        return list_of_matches
 
     def _insert_plot_point(self, x_axis_dict, term):
         """For every drug that's mentioned, uptick 1 to the key's value."""
@@ -102,14 +121,12 @@ class Post:
 # This should be moved into its own class.
 ##########################################
 
-def search_subreddit(subreddit, post_limit=1000):
+def search_subreddit(subreddit):
     """Takes the subreddit name ('/r/' is unecessary)."""
     user_agent = 'Visualize posts to /r/{}. {}'.format(subreddit, bot_version)
-    start_time = time.time()
-    gmt_time = time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime(start_time))
     r = praw.Reddit(user_agent=user_agent)
     subreddit = r.get_subreddit(subreddit, fetch=True)
-    post_limit = post_limit
+    return subreddit
 
 
 def parse_poly(drug_list, post_list):

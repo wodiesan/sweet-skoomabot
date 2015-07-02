@@ -22,66 +22,110 @@ import skoomabot_config as sbc
 import skoomabot_scifi as sbs
 import skoomabot_plot as sbp
 
-# Identify script to Reddit.
-user_agent = 'Visualize posts to /r/AskScienceFiction. Version 0.3.1'
-r = praw.Reddit(user_agent=user_agent)
-subreddit = r.get_subreddit('asksciencefiction', fetch=True)
-post_limit = 100
-
-# Authenticate with plot.ly.
+# Authenticate with plot.ly. This is local (based on generated api key).
 creds_plot = tls.get_credentials_file()
 
-start_time = time.time()
-print 'Bot started at {}'.format(start_time)
+#####################################################################
+# Identify script to Reddit.
+#####################################################################
+post_limit = 1000
+search_cat = 'Marvel'
+sort = 'top'
+subred = 'AskScienceFiction'
+subreddit = sbp.search_subreddit(subred)
 
-for submission in subreddit.get_new(limit=post_limit):
+#####################################################################
+# Various dictionaries and lists to be used in script.
+#####################################################################
+# All checked post ids, seperated by whether they contained matches.
+checked_id = sbs.sci_checked_id
+
+# Dict that contains the different series that we are matching for.
+tag_dict = sbs.sci_dict
+
+# These are used for the axes in various plot.ly visualizations.
+py_dict_sci, py_list_sci, py_matrix_sci = sbc.init_axes(tag_dict)
+
+# Testing Marvel and Star Trek subcategories.
+py_dict_dc, py_list_dc = sbc.init_subcategory(sbs.dc_cha)
+py_dict_marvel, py_list_marvel = sbc.init_subcategory(sbs.marvel_cha)
+py_dict_startrek, py_list_startrek = sbc.init_subcategory(sbs.startrek_cha)
+py_dict_wh, py_list_wh = sbc.init_subcategory(sbs.warhammer_cha)
+
+#####################################################################
+# Run the skoomabot!
+#####################################################################
+
+begin = time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime(time.time()))
+print '\nSkoomabot began at {}'.format(begin)
+
+# for submission in subreddit.get_new(limit=post_limit):
+for submission in subreddit.search(search_cat, sort=sort, limit=post_limit):
     post = sbp.Post(submission)
 
-    if post.id_num not in sbs.checked_post:
-        sci_tag, sci_tag_sub = post._tag(sbs.sci_dict, post.title)
+    if post.id_num not in checked_id:
+        # /r/AskScienceFiction requires titles to have category tags.
+        # These are denoted in brackets. Using these for initial check.
+        tags, tags_sub = post._tag(tag_dict, post.title)
 
-        if sci_tag:
-            print 'Matched: {}'.format(sci_tag_sub)
-            print '{}\n'.format(post.title)
+        if tags:
+            checked_id['pos'].append(post.id_num)
+            print 'Matched {} with {} tag in title.'.format(tags, tags_sub)
+            print '{} posted: {}\n'.format(post.username, post.title)
+            scifi = post._category(py_dict_sci, py_list_sci,
+                                   py_matrix_sci, tags)
 
-#             sci_matches, sci_sub_matches = post._match(sbs.sci_dict,
-#                                                        post.title)
-#             if sci_matches:
-#                 scifi = post._category(sbs.py_dict_sci, sbs.py_list_sci,
-#                                        sbs.py_matrix_sci, sci_matches)
+#####################################################################
+#            TESTING SUBCATEGORIES USING MARVEL AND STAR TREK
+#####################################################################
+            if 'dc' in tags:
+                post._tag_subcat(py_list_dc, py_dict_dc)
+            elif 'marvel' in tags:
+                post._tag_subcat(py_list_marvel, py_dict_marvel)
+            elif 'star trek' in tags:
+                post._tag_subcat(py_list_startrek, py_dict_startrek)
+            elif 'warhammer' or '40k' or 'wh40k' in tags:
+                post._tag_subcat(py_list_wh, py_dict_wh)
+        else:
+            checked_id['neg'].append(post.id_num)
 
-#                 if scifi:
-#                     print 'Post {} matches: {}'.format(post.id_num, scifi)
-#                     print '{} posted: {}\n'.format(post.username, post.title)
-#                     sbs.checked_post['pos'].append(post.id_num)
+print '\n{} out of {} titles have tag matches.'.format(len(checked_id['pos']),
+                                                       post_limit)
+print 'This leaves {} titles without matches.'.format(len(checked_id['neg']))
 
-#     #                #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#     #                # TESTING SUBCATEGORIES
-#     #                #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#                     # for item in slang_sub_matches:
-#                     #     if item not in sbc.cannabis:
-#                     #         pass
-#                     #     else:
-#                     #         post._insert_plot_point(sbc.cannabis_subcat_dict, item)
-#                 else:
-#                     sbs.checked_post['neg'].append(post.id_num)
-#             else:
-#                 sbs.checked_post['neg'].append(post.id_num)
+finish = time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime(time.time()))
+print '\nSkoomabot ended at {}'.format(finish)
 
-# print '\n{} out of {} titles have matches.'.format(len(sbs.checked_post['pos']), post_limit)
-# print 'This leaves {} out of {} titles without matches.'.format(len(sbs.checked_post['neg']), post_limit)
-print '\nBot ended at {}'.format(time.time())
+# viz_x_tag = py_list_sci
+# viz_y_tag = py_dict_sci.values()
 
-# mainviz_xaxis = sbs.py_list_sci
-# mainviz_yaxis = sbs.py_dict_sci.values()
-# viz_bar_sci = 'Frequency of characters mentioned in the last {} /r/AskScienceFiction post titles.'.format(post_limit)
-# viz_heat_sci = 'Heatmap of poly-character mentions in the last {} /r/AskScienceFiction post titles.'.format(post_limit)
+# viz_bar_sci = ('Frequency of series mentioned in the last {} /r/{}'
+#                'post titles.'.format(post_limit, subred))
+# viz_heat_sci = ('Heatmap of poly-series titles in the last {} /r/{}'
+#                 ' posts.'.format(post_limit, subred))
 
+# sbp.viz_bar(viz_bar_sci, viz_x_tag, viz_y_tag, 'skoomabot_bar_scifi')
+# sbp.viz_heat(viz_heat_sci, viz_x_tag, py_matrix_sci, 'skoomabot_heat_scifi')
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Testing subcategories with marijuana
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# viz_bar_mj = 'Frequency of cannabis terms in the last {} /r/Drugs post titles.'.format(post_limit)
-# mjviz_xaxis = sbc.cannabis_subcat_list
-# mjviz_yaxis = sbc.cannabis_subcat_dict.values()
-# sbp.viz_bar(viz_bar_mj, mjviz_xaxis, mjviz_yaxis, 'skoomabot_bar_mj')
+#####################################################################
+# Testing subcategories with Dc, Marvel, and Star Trek.
+#####################################################################
+
+viz_bar_title = ('Frequency of related terms in the {} {} /r/ {} posts '
+                 'tagged {}.'.format(sort, post_limit, subred, search_cat))
+
+# viz_x_dc = py_list_dc
+# viz_y_dc = py_dict_dc.values()
+# sbp.viz_bar(viz_bar_title, viz_x_dc, viz_y_dc, 'skoomabot_bar_dc')
+
+viz_x_marvel = py_list_marvel
+viz_y_marvel = py_dict_marvel.values()
+sbp.viz_bar(viz_bar_title, viz_x_marvel, viz_y_marvel, 'skoomabot_bar_marvel')
+
+# viz_x_trek = py_list_startrek
+# viz_y_trek = py_dict_startrek.values()
+# sbp.viz_bar(viz_bar_title, viz_x_trek, viz_y_trek, 'skoomabot_bar_startrek')
+
+# viz_x_wh = py_list_wh
+# viz_y_wh = py_dict_wh.values()
+# sbp.viz_bar(viz_bar_title, viz_x_wh, viz_y_wh, 'skoomabot_bar_wh')
