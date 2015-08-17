@@ -29,7 +29,7 @@ creds_plot = tls.get_credentials_file()
 # Identify script to Reddit.
 #####################################################################
 post_limit = 1000
-search_cat = 'Marvel'
+search_cat = 'Star Wars'
 sort = 'top'
 subred = 'AskScienceFiction'
 subreddit = sbp.search_subreddit(subred)
@@ -50,6 +50,7 @@ py_dict_sci, py_list_sci, py_matrix_sci = sbc.init_axes(tag_dict)
 # Testing Marvel and Star Trek subcategories.
 py_dict_dc, py_list_dc = sbc.init_subcategory(sbs.dc_cha)
 py_dict_marvel, py_list_marvel = sbc.init_subcategory(sbs.marvel_cha)
+py_dict_starwars, py_list_starwars = sbc.init_subcategory(sbs.starwars_cha)
 py_dict_startrek, py_list_startrek = sbc.init_subcategory(sbs.startrek_cha)
 py_dict_wh, py_list_wh = sbc.init_subcategory(sbs.warhammer_cha)
 
@@ -81,10 +82,14 @@ for submission in subreddit.search(search_cat, sort=sort, limit=post_limit):
 #####################################################################
             if 'dc' in tags:
                 post._tag_subcat(py_list_dc, py_dict_dc)
+                # if 'marvel' in tags:
+
             elif 'marvel' in tags:
                 post._tag_subcat(py_list_marvel, py_dict_marvel)
             elif 'star trek' in tags:
                 post._tag_subcat(py_list_startrek, py_dict_startrek)
+            elif 'star wars' in tags:
+                post._tag_subcat(py_list_starwars, py_dict_starwars)
             elif 'warhammer' or '40k' or 'wh40k' in tags:
                 post._tag_subcat(py_list_wh, py_dict_wh)
         else:
@@ -112,16 +117,20 @@ print '\nSkoomabot ended at {}'.format(finish)
 # Testing subcategories with Dc, Marvel, and Star Trek.
 #####################################################################
 
-viz_bar_title = ('Frequency of related terms in the {} {} /r/ {} posts '
+viz_bar_title = ('Frequency of related terms in the {} {} /r/{} posts '
                  'tagged {}.'.format(sort, post_limit, subred, search_cat))
 
 # viz_x_dc = py_list_dc
 # viz_y_dc = py_dict_dc.values()
 # sbp.viz_bar(viz_bar_title, viz_x_dc, viz_y_dc, 'skoomabot_bar_dc')
 
-viz_x_marvel = py_list_marvel
-viz_y_marvel = py_dict_marvel.values()
-sbp.viz_bar(viz_bar_title, viz_x_marvel, viz_y_marvel, 'skoomabot_bar_marvel')
+# viz_x_marvel = py_list_marvel
+# viz_y_marvel = py_dict_marvel.values()
+# sbp.viz_bar(viz_bar_title, viz_x_marvel, viz_y_marvel, 'skoomabot_bar_marvel')
+
+viz_x_starwars = py_list_starwars
+viz_y_starwars = py_dict_starwars.values()
+sbp.viz_bar(viz_bar_title, viz_x_starwars, viz_y_starwars, 'skoomabot_bar_starwars')
 
 # viz_x_trek = py_list_startrek
 # viz_y_trek = py_dict_startrek.values()

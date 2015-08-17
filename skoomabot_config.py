@@ -18,6 +18,15 @@ def create_matrix(dict_category):
     return matrix
 
 
+def create_matrix_2cats(dict_x_cat, dict_y_cat):
+    """Takes a dict and returns matrix with x and y at dict legnth."""
+    matrix_x_vals = dict_x_cat
+    matrix_y_vals = dict_y_cat
+    matrix = [[0 for x in range(len(matrix_x_vals))]
+              for x in range(len(matrix_y_vals))]
+    return matrix
+
+
 def dict_wo_vals(dict_w_vals):
     """Takes a dict, returns new dict with None vals for all keys."""
     copy_dict = OrderedDict.fromkeys(dict_w_vals.keys(), None)
